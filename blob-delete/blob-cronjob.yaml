@@ -1,0 +1,27 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    app: delete-old-blobs
+  name: delete-old-blobs
+spec:
+  schedule: "0 0 * * 6"
+  suspend: false  
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - command:
+            - /bin/sh
+            - -c
+            - |-
+              set -e
+              az storage blob delete-batch -s $CONTAINER_NAME --account-name $STORAGE_ACCOUNT --sas-token $SAS_TOKEN --pattern backup* --if-unmodified-since $(date -d "@$(($(date +%s) - (60 * 60 * 24 * 30)))" '+%Y-%m-%dT%H:%MZ')
+            image: mcr.microsoft.com/azure-cli
+            name: console
+            imagePullPolicy: IfNotPresent
+            envFrom:
+              - secretRef:
+                  name: delete-old-blobs           
+          restartPolicy: OnFailure

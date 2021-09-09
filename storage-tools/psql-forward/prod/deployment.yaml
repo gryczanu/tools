@@ -1,0 +1,52 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: psql-forward
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psql-forward
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: psql-forward
+      annotations:
+        sidecar.istio.io/inject: 'false'
+    spec:
+      containers:
+        - name: console
+          image: 'alpine/socat:1.7.3.4-r1'
+          command:
+            - /bin/sh
+            - '-c'
+            - >-
+              socat TCP-LISTEN:5432,fork
+              TCP:host.postgres.database.azure.com:5432
+          ports:
+            - name: tcp
+              containerPort: 5432
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 50m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  minReadySeconds: 5
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

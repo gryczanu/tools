@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: psql-forward
+  namespace: default
+  labels:
+    app: psql-forward
+spec:
+  ports:
+    - name: tcp
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: psql-forward
+  type: ClusterIP
+  sessionAffinity: None
+status:
+  loadBalancer: {}

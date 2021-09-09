@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgweb
+  namespace: storage
+spec:
+  selector:
+    app: pgweb
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80

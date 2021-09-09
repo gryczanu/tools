@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-commander
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: redis-commander
+      apps: facebook
+  template:
+    metadata:
+      labels:
+        app: redis-commander
+        apps: facebook
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 5
+      containers:
+        - image: rediscommander/redis-commander:latest
+          imagePullPolicy: Always
+          name: redis-commander-container
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - secretRef:
+                name: redis-commander

@@ -1,0 +1,18 @@
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongoclient
+  labels:
+    run: mongoclient
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 3000
+  selector:
+    run: mongoclient
+  type: ClusterIP
+status:
+  loadBalancer: {}

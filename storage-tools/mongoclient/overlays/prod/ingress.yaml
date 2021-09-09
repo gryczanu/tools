@@ -1,0 +1,23 @@
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mongoclient
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  rules:
+    - host: host.pl
+      http:
+        paths:
+          - path: /mongoclient/
+            backend:
+              serviceName: prod-mongoclient
+              servicePort: 80
+  tls:
+    - hosts:
+        - host.pl
+      secretName: prod-tls-secret-mongoclient

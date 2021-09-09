@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: mongo-express
+  template:
+    metadata:
+      labels:
+        app: mongo-express
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 5
+      containers:
+        - image: mongo-express:latest
+          imagePullPolicy: Always
+          name: mongo-express-container
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - secretRef:
+                name: mongo-express

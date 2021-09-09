@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: storage
+resources:
+- ../../base
+- secret.yaml
+
+namePrefix: prod-
+
+images:
+- name: mongo-express
+  newName: mongo-express
+  newTag: latest
+
+patches:
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/envFrom/0/secretRef/name
+      value: prod-mongo-express
+  target:
+    kind: Deployment
+    name: mongo-express
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: mongo-express
+  target:
+    kind: SealedSecret
+
+commonAnnotations:
+  env: prod
+  release: 2021.02.23 
